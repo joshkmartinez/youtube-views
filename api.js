@@ -2,25 +2,17 @@ var express = require('express')
 var app = express()
 const api = express.Router()
 var http = require('https')
-var fs = require('fs')
-const convert = require('html-to-json-data')
-const { text } = require('html-to-json-data/definitions')
-
-let x = 'Incorrect video id'
-function save(x) {
-  var stream = fs.createWriteStream('save.txt')
-  stream.once('open', function(fd) {
-    stream.write(x)
-    stream.end()
-  })
-}
+let x = 'incorrect video id'
 //need to ad promise to method
 function pullVid(id) {
   var options = {
     method: 'GET',
-    hostname: 'www.youtube.com',
+    hostname: 'www.googleapis.com',
     port: null,
-    path: '/watch?v=' + id,
+    path:
+      '/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=' +
+      id +
+      '&key=AIzaSyDY2V6mD-_JtXUZrj3gKQkt0TdUFlUIXV8',
     headers: {
       'content-length': '0'
     }
@@ -34,12 +26,9 @@ function pullVid(id) {
 
     res.on('end', function() {
       var body = Buffer.concat(chunks)
-      let c = convert(body.toString(), {
-        views: text('.watch-view-count')
-      }).views.slice(0, -6)
+      let c = JSON.parse(body).items[0].statistics.viewCount
       //console.log(c)
       x = c
-      //save(c)
     })
   })
 
@@ -66,7 +55,7 @@ api.get('/:param', (req, res) => {
   res.send(x)
   //res.sendFile('./save.txt', { root: __dirname })
   //save('') //save nothing so number isnt messed up
-  x = 'Incorrect video id'
+  x = 'incorrect video id'
 })
 
 api.get('/', (req, res) => {

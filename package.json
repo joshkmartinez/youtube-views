@@ -16,10 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
-    "html-to-json-data": "^1.6.0",
-    "jssoup": "^0.0.10",
-    "node-http-xhr": "^1.3.4"
+    "express": "^4.16.4"
   },
   "devDependencies": {
     "babel": "^6.23.0",
