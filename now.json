@@ -1,0 +1,10 @@
+{
+  "name": "Youtube Views",
+  "alias": ["ytv", "ytviews", "youtubeViews", "view"],
+  "version": 2,
+  "builds": [{ "src": "api.js", "use": "@now/node-server" }],
+  "routes": [{ "src": "/(.*)", "dest": "api.js" }],
+  "github": {
+    "silent": true
+  }
+}
