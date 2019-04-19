@@ -1,39 +1,25 @@
 var express = require('express')
 var app = express()
 const api = express.Router()
-var http = require('https')
-let x = 'incorrect video id'
-//need to ad promise to method
-function pullVid(id) {
-  var options = {
-    method: 'GET',
-    hostname: 'www.googleapis.com',
-    port: null,
-    path:
-      '/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=' +
-      id +
-      '&key=AIzaSyDY2V6mD-_JtXUZrj3gKQkt0TdUFlUIXV8',
-    headers: {
-      'content-length': '0'
-    }
-  }
+const axios = require('axios')
 
-  var req = http.request(options, function(res) {
-    var chunks = []
-    res.on('data', function(chunk) {
-      chunks.push(chunk)
+async function pull(id) {
+  let views = 'incorrect video id'
+  await axios
+    .get(
+      'https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=' +
+        id +
+        '&key=AIzaSyDY2V6mD-_JtXUZrj3gKQkt0TdUFlUIXV8'
+    )
+    .then(response => {
+      views = response.data.items[0].statistics.viewCount
     })
-
-    res.on('end', function() {
-      var body = Buffer.concat(chunks)
-      let c = JSON.parse(body).items[0].statistics.viewCount
-      //console.log(c)
-      x = c
+    .catch(error => {
+      return 'incorrect video id'
     })
-  })
-
-  req.end()
+  return views
 }
+
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
   res.header(
@@ -50,12 +36,9 @@ api.get('/rick', (req, res) => {
   res.end()
 })
 
-api.get('/:param', (req, res) => {
-  pullVid(req.params.param)
+api.get('/:param', async (req, res) => {
+  let x = await pull(req.params.param)
   res.send(x)
-  //res.sendFile('./save.txt', { root: __dirname })
-  //save('') //save nothing so number isnt messed up
-  x = 'incorrect video id'
 })
 
 api.get('/', (req, res) => {
